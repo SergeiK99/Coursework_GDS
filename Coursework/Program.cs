@@ -2,6 +2,7 @@ using Coursework_DataAccess;
 using Coursework_DataAccess.Repository;
 using Coursework_DataAccess.Repository.IRepository;
 using Coursework_Utility;
+using Coursework_Utility.BrainTree;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,10 @@ builder.Services.AddSession(Options => {
     Options.Cookie.HttpOnly = true;
     Options.Cookie.IsEssential = true;
 });
+
+//Регистрация сервиса BrainTree с настройками из appsettings 
+builder.Services.Configure<BrainTreeSettings>(builder.Configuration.GetSection("BrainTree"));
+builder.Services.AddSingleton<IBrainTreeGate, BrainTreeGate>();
 
 //Регистрация сервиса репозитория для обращения к нему
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();

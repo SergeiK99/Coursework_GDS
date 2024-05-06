@@ -1,9 +1,11 @@
-﻿using Coursework_DataAccess;
+﻿using Braintree;
+using Coursework_DataAccess;
 using Coursework_DataAccess.Repository;
 using Coursework_DataAccess.Repository.IRepository;
 using Coursework_Models;
 using Coursework_Models.ViewModels;
 using Coursework_Utility;
+using Coursework_Utility.BrainTree;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MimeKit.Cryptography;
@@ -20,12 +22,13 @@ namespace Coursework.Controllers
         private readonly IInquiryDetailRepository _inqDRepo;
         private readonly IOrderHeaderRepository _orderHRepo;
         private readonly IOrderDetailRepository _orderDRepo;
+        private readonly IBrainTreeGate _brain;
 
         [BindProperty]
         public ProductUserVM ProductUserVM { get; set; }
 
         public CartController(IApplicationUserRepository userRepo, IProductRepository prodRepo, IInquiryHeaderRepository inqHRepo, IInquiryDetailRepository inqDRepo,
-            IOrderHeaderRepository orderHRepo, IOrderDetailRepository orderDRepo)
+            IOrderHeaderRepository orderHRepo, IOrderDetailRepository orderDRepo, IBrainTreeGate brain)
         {
             _userRepo = userRepo;
             _prodRepo = prodRepo;
@@ -33,6 +36,7 @@ namespace Coursework.Controllers
             _inqDRepo = inqDRepo;
             _orderHRepo = orderHRepo;
             _orderDRepo = orderDRepo;
+            _brain = brain;
         }
         public IActionResult Index()
         {
@@ -92,6 +96,11 @@ namespace Coursework.Controllers
                 {
                     applicationUser = new ApplicationUser();
                 }
+
+                var gateway = _brain.GetGateway();
+                //Получение токена клиента
+                var clientToken = gateway.ClientToken.Generate();
+                ViewBag.ClientToken = clientToken;
             }
             else
             {
@@ -133,7 +142,7 @@ namespace Coursework.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
-        public async Task<IActionResult> SummaryPost(ProductUserVM ProductUserVM)
+        public async Task<IActionResult> SummaryPost(IFormCollection collection,ProductUserVM ProductUserVM)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -141,11 +150,11 @@ namespace Coursework.Controllers
             if(User.IsInRole(WebConstants.AdminRole))
             {
                 //Создание заказа
-                var orderTotal = 0.0;
-                foreach (Product prod in ProductUserVM.ProductList)
-                {
-                    orderTotal += prod.Price * prod.TempCount;
-                }
+                //var orderTotal = 0.0;
+                //foreach (Product prod in ProductUserVM.ProductList)
+                //{
+                //    orderTotal += prod.Price * prod.TempCount;
+                //}
                 OrderHeader orderHeader = new OrderHeader()
                 {
                     CreatedByUserId = claim.Value,
@@ -176,6 +185,32 @@ namespace Coursework.Controllers
 
                 }
                 _orderDRepo.Save();
+                string nonceFromTheClient = collection["payment_method_nonce"];
+
+                var request = new TransactionRequest
+                {
+                    Amount = Convert.ToDecimal(orderHeader.FinalOrderTotal),
+                    PaymentMethodNonce = nonceFromTheClient,
+                    OrderId = orderHeader.Id.ToString(),
+                    Options = new TransactionOptionsRequest
+                    {
+                        SubmitForSettlement = true
+                    }
+                };
+
+                var gateway = _brain.GetGateway();
+                Result<Transaction> result = gateway.Transaction.Sale(request);
+
+                if (result.Target.ProcessorResponseText == "Approved")
+                {
+                    orderHeader.TransactionId = result.Target.Id;
+                    orderHeader.OrderStatus = WebConstants.StatusApproved;
+                }
+                else
+                {
+                    orderHeader.OrderStatus = WebConstants.StatusCancelled;
+                }
+                _orderHRepo.Save();
                 return RedirectToAction(nameof(InquiryConfirmation), new { id = orderHeader.Id });
             }
             else
@@ -208,10 +243,11 @@ namespace Coursework.Controllers
             return RedirectToAction(nameof(InquiryConfirmation));
 
         }
-        public IActionResult InquiryConfirmation()
+        public IActionResult InquiryConfirmation(int id=0)
         {
+            OrderHeader orderHeader = _orderHRepo.FirstOrDefault(h => h.Id == id);
             HttpContext.Session.Clear();
-            return View();
+            return View(orderHeader);
         }
         public IActionResult Remove(int id)
         {
@@ -242,6 +278,11 @@ namespace Coursework.Controllers
 
             HttpContext.Session.Set(WebConstants.SessionCart, shoppingCartList);
             return RedirectToAction(nameof(Index));
+        }
+        public IActionResult Clear()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

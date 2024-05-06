@@ -1,8 +1,19 @@
-﻿
-@{
+﻿@model Coursework_Models.OrderHeader
+
+@* @{
     ViewData["Title"] = "InquiryConfirmation";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
+} *@
 
-<h1>Запрос подтвержден</h1>
+<div class="text-center">
+    @if(Model != null)
+    {
+        <h1 class="text-info">Заказ создан</h1>
+        <p>Заказ #@Model.Id был успешно создан!</p>
+    }
+    else
+    {
+        <h1 class="text-info">Запрос отправлен</h1>
+    }
+</div>
 

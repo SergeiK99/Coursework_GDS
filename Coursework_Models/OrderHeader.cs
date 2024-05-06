@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Coursework_Models
 {
@@ -25,7 +26,8 @@ namespace Coursework_Models
         public double FinalOrderTotal { get; set; }
         public string OrderStatus { get; set; }
         public DateTime PaymentDate { get; set; }
-        public string TransactionId { get; set; }
+        [DisallowNull]
+        public string? TransactionId { get; set; }
 
         [Required]
         public string PhoneNumber { get; set; }

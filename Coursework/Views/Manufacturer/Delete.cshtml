@@ -1,0 +1,50 @@
+﻿@model Coursework_Models.Manufacturer
+
+<form method="post" asp-action="DeletePost">
+    <div class="border p-3">
+        <input asp-for="Id" hidden />
+        <div class="mb-3 row">
+            <h2 class="text-info pl-3">
+                Удалить производителя
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="mb-3 row">
+                    <div class="col-4">
+                        <label asp-for="Name">Название</label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Name" disabled class="form-control" />
+                    </div>
+
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-8 offset-4 row">
+
+                        <div class="col">
+                            <input type="submit" class="btn btn-danger w-100" value="Удалить" />
+                        </div>
+                        <div class="col">
+                            <a asp-action="Index" class="btn btn-primary"> <i class="fa-solid fa-right-from-bracket"></i> Обратно </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                @* Keep this empty *@
+            </div>
+        </div>
+
+    </div>
+
+
+</form>
+
+<!-- Валидация на стороне клиента -->
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
+

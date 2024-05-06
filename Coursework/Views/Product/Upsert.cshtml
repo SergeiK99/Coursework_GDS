@@ -1,0 +1,159 @@
+﻿@model Coursework_Models.ViewModels.ProductVM
+@using Coursework_Utility
+
+@{
+    var title = "Создание товара";
+}
+
+@if (Model.Product.Id != 0 )
+{
+    title = "Редактирование товара";
+}
+
+<form method="post" enctype="multipart/form-data">
+    @if (Model.Product.Id != 0)
+    {
+        <input asp-for="Product.Id" hidden />
+    }
+    <div class="border p-3">
+        
+        <div class="mb-3 row">
+            <h2 class="text-info pl-3">
+                @title
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="mb-3 row">
+                    <div class="col-4">
+                        <label asp-for="Product.Name">Название</label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Product.Name" class="form-control" />
+                        <span asp-validation-for="Product.Name" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-4">
+                        <label asp-for="Product.Price">Цена</label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Product.Price" class="form-control" />
+                        <span asp-validation-for="Product.Price" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-4">
+                        <label asp-for="Product.ShortDesc">Короткое опиание</label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Product.ShortDesc" class="form-control" />
+                        <span asp-validation-for="Product.ShortDesc" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-4">
+                        <label asp-for="Product.Description">Описание</label>
+                    </div>
+                    <div class="col-8">
+                        <textarea asp-for="Product.Description" class="form-control summernote"></textarea>
+                        <span asp-validation-for="Product.Description" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-4">
+                        Изображение
+                    </div>
+                    <div class="col-8">
+                        <input type="file" name="files" id="uploadBox" multiple class="form-control" />
+                    </div>
+
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-4">
+                        <label asp-for="Product.CategoryId">Категория</label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="Product.CategoryId" asp-items="@Model.CategorySelectList" class="form-select">
+                            <option disabled selected>--Выберите категорию--</option>
+                        </select>
+                        <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-4">
+                        <label asp-for="Product.ManufacturerId">Производитель</label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="Product.ManufacturerId" asp-items="@Model.ManufacturerSelectList" class="form-select">
+                            <option disabled selected>--Выберите производителя--</option>
+                        </select>
+                        <span asp-validation-for="Product.ManufacturerId" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-8 offset-4 row">
+
+                        <div class="col">
+                            @if(Model.Product.Id!=0)
+                            {
+                                //Изменение товара
+                                <input type="submit" class="btn btn-info w-100" value="Изменить" />
+                            }
+                            else
+                            {
+                                //Создание товара
+                                <input type="submit" onclick="return validateInput()" class="btn btn-primary w-100" value="Создать" />
+                            }
+                        </div>
+                        <div class="col">
+                            <a asp-action="Index" class="btn btn-primary"> <i class="fa-solid fa-right-from-bracket"></i> Обратно </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                @* Keep this empty *@
+                @if(Model.Product.Id != 0)
+                {
+                    <img src="@WebConstants.ImagePath@Model.Product.Image" width="350" style="border-radius:5px; border:1px solid #bbb" />
+                }
+            </div>
+        </div>
+
+    </div>
+
+
+</form>
+
+<!-- Валидация на стороне клиента -->
+@section Scripts{
+    @{
+    <partial name="_ValidationScriptsPartial" />
+    }
+    <script>
+        $(document).ready(function () {
+            $('.summernote').summernote({
+                height:250
+            });
+        });
+        function validateInput() {
+            if (document.getElementById("uploadBox").value == "") {
+                Swal.fire({
+                    title: "Ошибка!",
+                    text: "Пожалуйста, загрузите и изображение!",
+                    icon: "ошибка"
+                });
+                return false;
+            }
+            return true;
+        }
+    </script>
+}
+

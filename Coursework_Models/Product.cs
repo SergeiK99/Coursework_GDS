@@ -24,7 +24,7 @@ namespace Coursework_Models
         [ForeignKey("ManufacturerId")]
         public virtual Manufacturer Manufacturer { get; set; }
         [NotMapped]
-        [Range(1,100)] //Минимальное кол-во товаров 1, максимум 100
+        [Range(1,100, ErrorMessage ="Кол-во товара должно быть больше 0")] //Минимальное кол-во товаров 1, максимум 100
         public int TempCount { get; set; }
     }
 }

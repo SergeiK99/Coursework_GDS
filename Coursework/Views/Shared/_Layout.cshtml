@@ -55,6 +55,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" asp-area="" asp-controller="Inquiry" asp-action="Index">Запросы</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Order" asp-action="Index">Заказы</a></li>
                                 </ul>
                             </li>
                         }
@@ -110,5 +111,7 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+    <!-- Syncfusion ASP.NET Core Script Manager -->
+    <ejs-scripts></ejs-scripts>
 </body>
 </html>

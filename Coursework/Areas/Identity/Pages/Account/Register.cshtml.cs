@@ -83,12 +83,11 @@ namespace Coursework.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            //Создание ролей
-            if(!await _roleManager.RoleExistsAsync(WebConstants.AdminRole))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(WebConstants.AdminRole));
-                await _roleManager.CreateAsync(new IdentityRole(WebConstants.CustomerRole));
-            }
+            //if (!await _roleManager.RoleExistsAsync(WebConstants.AdminRole))
+            //{
+            //    await _roleManager.CreateAsync(new IdentityRole(WebConstants.AdminRole));
+            //    await _roleManager.CreateAsync(new IdentityRole(WebConstants.CustomerRole));
+            //}
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }

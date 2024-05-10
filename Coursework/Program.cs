@@ -1,4 +1,5 @@
 using Coursework_DataAccess;
+using Coursework_DataAccess.Initializer;
 using Coursework_DataAccess.Repository;
 using Coursework_DataAccess.Repository.IRepository;
 using Coursework_Utility;
@@ -46,6 +47,7 @@ builder.Services.AddScoped<IInquiryDetailRepository, InquiryDetailRepository>();
 builder.Services.AddScoped<IOrderHeaderRepository, OrderHeaderRepository>();
 builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 builder.Services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
 var app = builder.Build();
 
@@ -64,6 +66,11 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+using (var scope = app.Services.CreateScope())
+{
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+    dbInitializer.Initialize();
+}
 app.UseSession();
 
 app.MapRazorPages();

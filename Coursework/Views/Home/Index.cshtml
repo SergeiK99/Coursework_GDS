@@ -1,21 +1,22 @@
 ﻿@model Coursework_Models.ViewModels.HomeVM
 
- <div class="container">
-    <div class="text-center">
-        <button class="btn btn-dark filter-button" data-filter="all">Все</button>
-        @foreach (var obj in Model.Categories)
-        {
-            <button class="btn btn-outline-secondary filter-button" data-filter="@obj.Name.Replace(' ','_')">
-                @obj.Name
-            </button>
-        }
+<div class="container">
+    <div class="text-center mb-4">
+        <h1 class="mb-3">Игровые девайсы</h1>
+        <div class="d-inline-block">
+            <button class="btn btn-ligth filter-button active" style="background-color: #28a745" data-filter="all">Все</button>
+            @foreach (var obj in Model.Categories)
+            {
+                <button class="btn btn-outline-secondary filter-button" style="background-color: #d4f1e4; color: #212121" data-filter="@obj.Name.Replace(' ','_')">
+                    @obj.Name
+                </button>
+            }
+        </div>
     </div>
-    <br />
-    <div class="row">
-        @foreach(var prod in Model.Products)
+    <div class="row" id="product-grid">
+        @foreach (var prod in Model.Products)
         {
-            <partial name ="_IndividualProductCard" model="prod" />
-            //Показ всех товаров отдельно
+            <partial name="_IndividualProductCard" model="prod" />
         }
     </div>
 </div>

@@ -16,11 +16,11 @@ namespace Coursework_Models
         public double Price { get; set; }
         public string Image { get; set; }
         [Display(Name = "Category Type")]
-        public int CategoryId { get; set; }
+        public int CategoryId { get; set; } //Связь с таблицей категорий
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }
         [Display(Name = "Manufacturer")]
-        public int ManufacturerId { get; set; }
+        public int ManufacturerId { get; set; } //Cвязь с таблицей производителей
         [ForeignKey("ManufacturerId")]
         public virtual Manufacturer Manufacturer { get; set; }
         [NotMapped]
